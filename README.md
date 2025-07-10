@@ -39,7 +39,7 @@ After ```make```, the folder **workspace** will be created. The synthesized resu
 To extract rc from synthesized result, just run 
 
 ```
-perl extract.pl ispd2009f11 result 45_LP.pm
+perl extract.pl ispd2009f11 result 45nm_LP.pm
 ``` 
 
 To show the graphical result, just run 

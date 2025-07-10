@@ -67,11 +67,9 @@ class topology():
                 self.wirelength.append(target_seg_length)
 
                 for j in range(int(merge_times)):
-                    merged_point,nodes,wires = merge(points[branch*j:branch*(j+1)],target_seg_length)
-                    self.nodes.extend(nodes)
+                    merged_point,wires = merge(points[branch*j:branch*(j+1)],target_seg_length)
                     self.nodes.append(merged_point)
                     self.wires.extend(wires)
-
                     new_point,candidate_buffer = self.candidateBuffer(merged_point)
                     candidate.append(candidate_buffer)
                     self.nodes.append(new_point)
@@ -91,8 +89,7 @@ class topology():
                 self.wirelength.append(target_seg_length)
 
                 for j in range(int(merge_times)):
-                    merged_point,nodes,wires = merge(points[branch*j:branch*(j+1)],target_seg_length)
-                    self.nodes.extend(nodes)
+                    merged_point,wires = merge(points[branch*j:branch*(j+1)],target_seg_length)
                     self.nodes.append(merged_point)
                     self.wires.extend(wires)
 
@@ -108,14 +105,12 @@ class topology():
                 # merge to get clock tree root point
                 target_seg_length = get_seg_length(merged_points)
                 self.wirelength.append(target_seg_length)
-                root,nodes,wires = merge(merged_points,target_seg_length)
-                self.nodes.extend(nodes)
+                root,wires = merge(merged_points,target_seg_length)
                 self.nodes.append(root)
                 self.wires.extend(wires)
                 new_root,candidate_buffer = self.candidateBuffer(root)
                 self.nodes.append(new_root)
                 self.candidates.append([candidate_buffer])
-
                 # link root to sourcenode at (0,0)
                 self.wires.append(wire(Point(0,0),new_root))
          
@@ -182,27 +177,23 @@ class topology():
                 # considering non-buffering branch
                 if buffer_type[i] == 0:
                     #self.wires.append(a_candidate.changeToWire())
+                    #self.wires.append(wire(endpoint,startpoint))
                     self.removeMergePoint(startpoint,endpoint)
                 else:
                     self.buffers.append(clk_buffer(startpoint,endpoint,buffer_type[i]-1))
     
     def removeMergePoint(self,startpoint,endpoint):
-        own_end_point = False
-        own_start_point = False
+        found_wire = False
         wire_list = self.wires
         for a_wire in self.wires:
-            if a_wire.startpoint == endpoint or a_wire.endpoint == startpoint:
-                if a_wire.startpoint == endpoint:
-                    own_end_point = True
-                    new_endpoint = a_wire.endpoint
-                    wire_list.remove(a_wire)
-                else:
-                    own_start_point = True
-                    new_startpoint = a_wire.startpoint
-                    wire_list.remove(a_wire)
-                if own_end_point and own_start_point:
-                    wire_list.append(wire(new_startpoint,new_endpoint))
-                    own_end_point = False
+            if  a_wire.endpoint == startpoint:
+                found_wire = True
+                new_startpoint = a_wire.startpoint
+                wire_list.remove(a_wire)
+                if  found_wire:
+                    wire_list.append(wire(endpoint,new_startpoint))
+                    self.nodes.remove(startpoint)
+                    break
 
         self.wires = wire_list
                 

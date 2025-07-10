@@ -3,7 +3,6 @@ from point import M_Point
 
 def merge(points,seg_length):
 
-	new_points = []
 	new_wires = []
 	end_point_location = get_center(points)
 	end_point = M_Point(location=end_point_location)
@@ -11,10 +10,8 @@ def merge(points,seg_length):
 
 	for i in range(len(points)):
 		direct_wire = wire(end_point,points[i])
-		new_points += [end_point,points[i]]
 		new_wires  += [direct_wire]
-
-	return end_point,new_points,new_wires
+	return end_point,new_wires
 
 def get_center(points):
 	sum_loc = complex(0,0)
